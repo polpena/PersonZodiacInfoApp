@@ -1,0 +1,258 @@
+<Page x:Class="PersonInfoApp.Views.UsersListPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:local="clr-namespace:PersonInfoApp.Converters"
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+      Title="Users List">
+
+	<!-- Page Resources -->
+	<Page.Resources>
+		<BooleanToVisibilityConverter x:Key="BoolToVisConverter"/>
+		<local:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter"/>
+		<local:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
+	</Page.Resources>
+
+	<Grid Margin="20">
+		<StackPanel>
+			<!-- Header -->
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,0,20">
+                <TextBlock Text="Users List " 
+                           Style="{StaticResource MaterialDesignHeadline5TextBlock}" />
+                <materialDesign:PackIcon Kind="AccountMultipleOutline" Width="32" Height="32" Margin="0,0,10,0"/>
+            </StackPanel>
+
+            <!-- Collapsible Filter Section -->
+            <Expander IsExpanded="False" 
+                      Margin="0,0,0,10"
+                      Background="{DynamicResource MaterialDesignPaper}">
+                <Expander.Header>
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock Text="Account Filters" 
+                 Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                 VerticalAlignment="Center"/>
+                        <materialDesign:PackIcon Kind="AccountFilter" 
+                        Width="24" Height="24" 
+                        Margin="10,0,5,0"/>
+                    </StackPanel>
+                </Expander.Header>
+                <StackPanel Orientation="Vertical" Margin="10,0,10,10">
+
+                    <!-- Row 1: Name and Email Filters -->
+                    <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                        <TextBox Width="100"
+                                 materialDesign:HintAssist.Hint="First Name"
+                                 Text="{Binding FilterFirstName, UpdateSourceTrigger=PropertyChanged}"
+                                 Margin="0,0,10,0"
+                                 Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
+                        <TextBox Width="100"
+                                 materialDesign:HintAssist.Hint="Last Name"
+                                 Text="{Binding FilterLastName, UpdateSourceTrigger=PropertyChanged}"
+                                 Margin="0,0,10,0"
+                                 Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
+                        <TextBox Width="100"
+                                 materialDesign:HintAssist.Hint="Email"
+                                 Text="{Binding FilterEmail, UpdateSourceTrigger=PropertyChanged}"
+                                 Margin="0,0,10,0"
+                                 Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
+                    </StackPanel>
+                    
+                    <!-- Row 2: Birth Date Filter Mode Toggle -->
+                    <StackPanel Orientation="Horizontal" 
+                                Margin="0,20,0,0">
+                        <TextBlock Text="Birth Date Filter:"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,5,0"
+                                   Style="{StaticResource MaterialDesignHelperTextBlock}"/>
+
+                        <!-- EXACT MODE -->
+                        <RadioButton Content="Exact"
+                                     IsChecked="{Binding UseExactBirthDateFilter, Mode=TwoWay}"
+                                     GroupName="BirthDateMode"
+                                     Margin="0,0,10,0"
+                                     Style="{StaticResource MaterialDesignRadioButton}"/>
+                        <!-- RANGE MODE -->
+                        <RadioButton Content="Range"
+                                     IsChecked="{Binding UseExactBirthDateFilter, Mode=TwoWay, Converter={StaticResource InverseBooleanConverter}}"
+                                     GroupName="BirthDateMode"
+                                     Style="{StaticResource MaterialDesignRadioButton}"/>
+                    </StackPanel>
+
+
+                    <!-- Row 3: Exact Birth Date Filter -->
+                    <StackPanel Orientation="Horizontal" Margin="0,5,0,0"
+                                Visibility="{Binding UseExactBirthDateFilter, Converter={StaticResource BoolToVisConverter}}">
+                        <DatePicker Width="120"
+                                    materialDesign:HintAssist.Hint="Exact Date"
+                                    SelectedDate="{Binding FilterBirthDateExact, Mode=TwoWay}"
+                                    Style="{StaticResource MaterialDesignOutlinedDatePicker}"/>
+                    </StackPanel>
+
+                    <!-- Row 4: Date Range Filter -->
+                    <StackPanel Orientation="Horizontal" 
+                                Margin="0,5,0,0"
+                                Visibility="{Binding UseExactBirthDateFilter, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
+
+                        <DatePicker Width="120"
+                                    materialDesign:HintAssist.Hint="From"
+                                    SelectedDate="{Binding FilterBirthDateStart, Mode=TwoWay}"
+                                    Margin="0,0,10,0"
+                                    Style="{StaticResource MaterialDesignOutlinedDatePicker}"/>
+                        <DatePicker Width="120"
+                                    materialDesign:HintAssist.Hint="To"
+                                    SelectedDate="{Binding FilterBirthDateEnd, Mode=TwoWay}"
+                                    Style="{StaticResource MaterialDesignOutlinedDatePicker}"/>
+                    </StackPanel>
+
+                    <!-- Row 5: Boolean Filters -->
+                    <StackPanel Orientation="Horizontal" Margin="0,5,0,0"
+                                HorizontalAlignment="Left">
+                        <!-- IsAdult -->
+                        <materialDesign:PackIcon Kind="PersonCheck" Width="20" Height="20" Margin="0,0,5,0"/>
+                        <StackPanel Margin="0,0,20,0">
+                            <TextBlock Text="Adult"
+                                       Margin="0,0,0,5"
+                                       Style="{StaticResource MaterialDesignCaptionTextBlock}"/>
+                            <ComboBox Width="100" 
+                                      SelectedValuePath="Tag"
+                                      SelectedValue="{Binding FilterIsAdult, UpdateSourceTrigger=PropertyChanged}"
+                                      Style="{StaticResource MaterialDesignComboBox}">
+                                <ComboBoxItem Content="All" Tag="{x:Null}" IsSelected="True"/>
+                                <ComboBoxItem Content="Yes" Tag="True"/>
+                                <ComboBoxItem Content="No" Tag="False"/>
+                            </ComboBox>
+                        </StackPanel>
+
+                        <!-- IsBirthday -->
+                        <materialDesign:PackIcon Kind="CakeVariant" Width="20" Height="20" Margin="0,0,5,0"/>
+                        <StackPanel>
+                            <TextBlock Text="Birthday"
+                                       Margin="0,0,0,5"
+                                       Style="{StaticResource MaterialDesignCaptionTextBlock}"/>
+                            <ComboBox Width="100" 
+                                      SelectedValuePath="Tag"
+                                      SelectedValue="{Binding FilterIsBirthday, UpdateSourceTrigger=PropertyChanged}"
+                                      Style="{StaticResource MaterialDesignComboBox}">
+                                <ComboBoxItem Content="All" Tag="{x:Null}" IsSelected="True"/>
+                                <ComboBoxItem Content="Yes" Tag="True"/>
+                                <ComboBoxItem Content="No" Tag="False"/>
+                            </ComboBox>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!-- Row 6: Zodiac Filters -->
+                    <StackPanel Orientation="Horizontal" Margin="0,5,0,0" HorizontalAlignment="Left">
+                        <!-- Western Zodiac -->
+                        <materialDesign:PackIcon Kind="ZodiacLibra" Width="20" Height="20" Margin="0,0,5,0"/>
+                        <StackPanel Margin="0,0,20,0">
+                            <TextBlock Text="Western Zodiac"
+                                       Margin="0,0,0,5"
+                                       Style="{StaticResource MaterialDesignCaptionTextBlock}"/>
+                            <ComboBox Width="120" 
+                                      SelectedValuePath="Tag"
+                                      SelectedValue="{Binding FilterSunSign, UpdateSourceTrigger=PropertyChanged}"
+                                      Style="{StaticResource MaterialDesignComboBox}">
+                                <ComboBoxItem Content="All" Tag="All" IsSelected="True"/>
+                                <ComboBoxItem Content="Aries" Tag="Aries"/>
+                                <ComboBoxItem Content="Taurus" Tag="Taurus"/>
+                                <ComboBoxItem Content="Gemini" Tag="Gemini"/>
+                                <ComboBoxItem Content="Cancer" Tag="Cancer"/>
+                                <ComboBoxItem Content="Leo" Tag="Leo"/>
+                                <ComboBoxItem Content="Virgo" Tag="Virgo"/>
+                                <ComboBoxItem Content="Libra" Tag="Libra"/>
+                                <ComboBoxItem Content="Scorpio" Tag="Scorpio"/>
+                                <ComboBoxItem Content="Sagittarius" Tag="Sagittarius"/>
+                                <ComboBoxItem Content="Capricorn" Tag="Capricorn"/>
+                                <ComboBoxItem Content="Aquarius" Tag="Aquarius"/>
+                                <ComboBoxItem Content="Pisces" Tag="Pisces"/>
+                            </ComboBox>
+                        </StackPanel>
+
+                        <!-- Chinese Zodiac -->
+                        <materialDesign:PackIcon Kind="IdeogramChineseJapaneseKorean" Width="20" Height="20" Margin="0,0,5,0"/>
+                        <StackPanel>
+                            <TextBlock Text="Chinese Zodiac"
+                                       Margin="0,0,0,5"
+                                       Style="{StaticResource MaterialDesignCaptionTextBlock}"/>
+                            <ComboBox Width="120"
+                                      SelectedValuePath="Tag"
+                                      SelectedValue="{Binding FilterChineseSign, UpdateSourceTrigger=PropertyChanged}"
+                                      Style="{StaticResource MaterialDesignComboBox}">
+                                <ComboBoxItem Content="All" Tag="All" IsSelected="True"/>
+                                <ComboBoxItem Content="Rat" Tag="Rat"/>
+                                <ComboBoxItem Content="Ox" Tag="Ox"/>
+                                <ComboBoxItem Content="Tiger" Tag="Tiger"/>
+                                <ComboBoxItem Content="Rabbit" Tag="Rabbit"/>
+                                <ComboBoxItem Content="Dragon" Tag="Dragon"/>
+                                <ComboBoxItem Content="Snake" Tag="Snake"/>
+                                <ComboBoxItem Content="Horse" Tag="Horse"/>
+                                <ComboBoxItem Content="Goat" Tag="Goat"/>
+                                <ComboBoxItem Content="Monkey" Tag="Monkey"/>
+                                <ComboBoxItem Content="Rooster" Tag="Rooster"/>
+                                <ComboBoxItem Content="Dog" Tag="Dog"/>
+                                <ComboBoxItem Content="Pig" Tag="Pig"/>
+                            </ComboBox>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!-- Clear Filters Button -->
+                    <StackPanel Orientation="Horizontal" 
+                                Margin="0,10,0,0"
+                                HorizontalAlignment="Right">
+                        <Button Content="Clear Filters"
+                                Width="120" 
+                                Command="{Binding ClearFiltersCommand}" 
+                                Style="{StaticResource MaterialDesignFlatButton}"/>
+                    </StackPanel>
+                </StackPanel>
+            </Expander>
+
+			<!-- DataGrid Section -->
+            <DataGrid ItemsSource="{Binding UsersView}" 
+                AutoGenerateColumns="False" 
+                IsReadOnly="True"
+                SelectionMode="Single"
+                SelectedItem="{Binding SelectedUser, Mode=TwoWay}"
+                CanUserSortColumns="True"
+                Height="350">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="First Name" Binding="{Binding FirstName}" Width="*"/>
+                    <DataGridTextColumn Header="Last Name" Binding="{Binding LastName}" Width="*"/>
+                    <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="*"/>
+                    <DataGridTextColumn Header="Birth Date" Binding="{Binding BirthDate, StringFormat=d}" Width="*"/>
+                    <DataGridCheckBoxColumn Header="Is Adult" Binding="{Binding IsAdult, Mode=OneWay}" />
+                    <DataGridTextColumn Header="Western Zodiac" Binding="{Binding SunSign, Mode=OneWay}" Width="*"/>
+                    <DataGridTextColumn Header="Chinese Zodiac" Binding="{Binding ChineseSign, Mode=OneWay}" Width="*"/>
+                    <DataGridCheckBoxColumn Header="Birthday Today" Binding="{Binding IsBirthday, Mode=OneWay}" Width="*"/>
+                </DataGrid.Columns>
+            </DataGrid>
+
+			<!-- Navigation Buttons -->
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
+                <Button Command="{Binding NavigateToAddCommand}" Style="{StaticResource MaterialDesignRaisedButton}">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <materialDesign:PackIcon Kind="PersonAdd" Width="24" Height="24" Margin="0,0,5,0"/>
+                        <TextBlock Text="Person" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+                <Button Command="{Binding EditPersonCommand}" Width="100" Margin="5" Style="{StaticResource MaterialDesignFlatButton}">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <materialDesign:PackIcon Kind="AccountEdit" Width="20" Height="20" Margin="0,0,5,0"/>
+                        <TextBlock Text="Edit" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+                <Button Command="{Binding DeletePersonCommand}" Width="100" Margin="5" Style="{StaticResource MaterialDesignFlatButton}">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <materialDesign:PackIcon Kind="PersonRemove" Width="20" Height="20" Margin="0,0,5,0"/>
+                        <TextBlock Text="Delete" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+                <Button Command="{Binding ShowDetailsCommand}" Width="100" Margin="5" Style="{StaticResource MaterialDesignFlatButton}">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <materialDesign:PackIcon Kind="Information" Width="20" Height="20" Margin="0,0,5,0"/>
+                        <TextBlock Text="Details" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+        </StackPanel>
+	</Grid>
+</Page>
